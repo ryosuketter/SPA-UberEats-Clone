@@ -6,12 +6,23 @@ module Api
       def index
         line_foods = LineFood.active.all
         # TODO 以下の処理の理解ができていないのでできればしたい
+        # https://www.techpit.jp/courses/138/curriculums/141/sections/1052/parts/4173
         if line_foods.exists?
+          line_food_ids = []
+          count = 0
+          amount = 0
+        
+          line_foods.each do |line_food|
+            line_food_ids << line_food.id # (1) idを参照して配列に追加する
+            count += line_food[:count] # (2)countのデータを合算する
+            amount += line_food.total_amount # (3)total_amountを合算する
+          end
+        
           render json: {
-            line_food_ids: line_foods.map { |line_food| line_food.id },
+            line_food_ids: line_food_ids,
             restaurant: line_foods[0].restaurant,
-            count: line_foods.sum { |line_food| line_food[:count] },
-            amount: line_foods.sum { |line_food| line_food.total_amount },
+            count: count,
+            amount: amount,
           }, status: :ok
         else
           render json: {}, status: :no_content
