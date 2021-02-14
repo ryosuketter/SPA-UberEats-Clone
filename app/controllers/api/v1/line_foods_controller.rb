@@ -59,7 +59,7 @@ module Api
         @ordered_food = Food.find(params[:food_id])
       end
 
-      def set_line_food(@ordered_food)
+      def set_line_food(ordered_food)
         if ordered_food.line_food.present?
           # TODO この1行の理解ができていないのでできればしたい
           @line_food = ordered_food.line_food
