@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer } from "react";
+import React, { useEffect, useReducer, useState } from "react";
 import styled from "styled-components";
 import { COLORS } from "../style_constants";
 import { Link } from "react-router-dom";
@@ -7,6 +7,7 @@ import { Link } from "react-router-dom";
 import { LocalMallIcon } from "../components/Icons";
 import { FoodWrapper } from "../components/FoodWrapper";
 import Skeleton from "@material-ui/lab/Skeleton";
+import { FoodOrderDialog } from "../components/FoodOrderDialog";
 
 // reducers
 import {
@@ -53,12 +54,24 @@ const ItemWrapper = styled.div`
   margin: 16px;
 `;
 
+const submitOrder = () => {
+  // 後ほど仮注文のAPIを実装します
+  console.log("登録ボタンが押された！");
+};
+
 export const Foods = ({ match }) => {
   const {
     params: { restaurantsId },
   } = match;
 
   const [foodsState, dispatch] = useReducer(foodsReducer, foodsInitialState);
+
+  const initialState = {
+    isOpenOrderDialog: false,
+    selectedFood: null,
+    selectedFoodCount: 1,
+  };
+  const [state, setState] = useState(initialState);
 
   useEffect(() => {
     dispatch({ type: foodsActionTyps.FETCHING });
@@ -98,13 +111,49 @@ export const Foods = ({ match }) => {
             <ItemWrapper key={food.id}>
               <FoodWrapper
                 food={food}
-                onClickFoodWrapper={(food) => console.log(food)}
+                onClickFoodWrapper={(food) => {
+                  setState({
+                    ...state,
+                    isOpenOrderDialog: true,
+                    selectedFood: food,
+                  });
+                }}
                 imageUrl={FoodImage}
               />
             </ItemWrapper>
           ))
         )}
       </FoodsList>
+      {state.isOpenOrderDialog && (
+        <FoodOrderDialog
+          isOpen={state.isOpenOrderDialog}
+          food={state.selectedFood}
+          countNumber={state.selectedFoodCount}
+          onClickCountUp={() =>
+            setState({
+              ...state,
+              selectedFoodCount: state.selectedFoodCount + 1,
+            })
+          }
+          onClickCountDown={() =>
+            setState({
+              ...state,
+              selectedFoodCount: state.selectedFoodCount - 1,
+            })
+          }
+          // 先ほど作った関数を渡します
+          onClickOrder={() => submitOrder()}
+          // モーダルを閉じる時はすべてのstateを初期化する
+          onClose={() =>
+            setState({
+              ...state,
+              isOpenOrderDialog: false,
+              selectedFood: null,
+              selectedFoodCount: 1,
+            })
+          }
+        />
+      )}
     </>
   );
 };
