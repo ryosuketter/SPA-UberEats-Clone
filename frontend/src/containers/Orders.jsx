@@ -64,7 +64,7 @@ export const Orders = () => {
       case REQUEST_STATE.LOADING:
         return "注文中...";
       case REQUEST_STATE.OK:
-        return "注文が完了しました！";
+        return "注文が完了しました";
       default:
         return "注文を確定する";
     }
